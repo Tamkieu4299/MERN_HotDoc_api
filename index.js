@@ -28,7 +28,6 @@ app.use(express.json());
 app.use(helmet());
 app.use(morgan("common"));
 
-
 // Routes
 app.use("/api/doctors", doctorRoute);
 app.use("/api/customers", customerRoute);

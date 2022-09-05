@@ -9,5 +9,4 @@ router.post("/register", customerController.registerCustomer)
 router.put("/:id", customerController.updateCustomer);
 // Get a customer
 router.get("/", customerController.getCustomer);
-
 module.exports = router;

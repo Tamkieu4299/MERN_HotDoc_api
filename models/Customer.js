@@ -27,7 +27,7 @@ const CustomerSchema = new mongoose.Schema(
             type: String,
         },
         password: {
-            type: String,
+            type: String,   
             required: true,
             min: 6,
         },

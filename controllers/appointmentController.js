@@ -20,11 +20,11 @@ const getAvailableDoctorsBetween = async (from, to) => {
             if (
                 (from < apps.bookingStartDate && to > apps.bookingEndDate) ||
                 (from > apps.bookingStartDate && from < apps.bookingEndDate) ||
-                 (to > apps.bookingStartDate && to <= apps.bookingEndDate)
+                (to > apps.bookingStartDate && to <= apps.bookingEndDate)
             ){
                 console.log("Yes");
-                return false;}
-            
+                return false;
+            }
         }
         return true;
     });
