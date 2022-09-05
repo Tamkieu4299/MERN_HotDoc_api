@@ -5,7 +5,7 @@ const Doctor = require("../models/Doctor");
 module.exports.createReview = async (req,res) => {
     try {
         const newReview = new Review({
-            customerName: req.params.customerName,
+            customerName: req.body.customerName,
             doctorId: req.body.doctorId,
             desc: req.body.desc,
         });

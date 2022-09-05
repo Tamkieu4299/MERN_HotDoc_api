@@ -29,6 +29,9 @@ const DoctorSchema = mongoose.Schema(
         workingDesc: {
             type: String,
         },
+        currentDepartment:{
+            type: String,
+        },
         password: {
             type: String,
             required: true,
@@ -66,8 +69,7 @@ const DoctorSchema = mongoose.Schema(
             default: [],
         },
         services: {
-            type: Array,
-            default: [],
+            type: String,
         },
     },
     { timestamps: true }
