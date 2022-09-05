@@ -1,27 +1,83 @@
+const asyncHandler = require('express-async-handler');
+const generateToken = require('../config/generateToken');
 const Doctor = require("../models/Doctor");
 const bcrypt = require("bcrypt");
 
 // Register a doctor
-module.exports.registerDoctor = async (req, res) => {
-    try {
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(req.body.password, salt);
-        const newDoctor = new Doctor({
-            username: req.body.username,
-            email: req.body.email,
-            phoneNumber: req.body.phoneNumber,
-            idNumber: req.body.idNumber,
-            password: hashedPassword,
+const registerDoctor = asyncHandler(async (req, res) => {
+    const { username, email, idNumber, phoneNumber , password} = req.body;
+    if (!username || !email || !password || !phoneNumber) {
+        res.status(400);
+        throw new Error("Please enter all the fields");
+    }
+
+    const userExist = await Doctor.findOne({username, email});
+    
+    if (userExist) {
+        res.status(400);
+        throw new Error("User already exists");
+    }
+    
+    const user = await Doctor.create({
+        username,
+        email,
+        phoneNumber,
+        idNumber,
+        password,
+    });
+
+    if (user) {
+        res.status(201).json({
+            _id: user._id,
+            username: user.username,
+            email: user.email,
+            phoneNumber: user.phoneNumber,
+            idNumber: user.idNumber,
+            token:generateToken(user._id)
         });
-        const doctor = await newDoctor.save();
-        res.status(200).json(doctor);
+    }
+    else {
+        res.status(400);
+        throw new Error("Failed to create user");
+    }
+});
+
+//Login with doctor
+const authDoctor = asyncHandler(async (req, res) => {
+    const { email, password } = req.body;
+    const user = await Doctor.findOne({ email });
+
+    if (user && (await user.matchPassword(password))) {
+        res.json({
+            _id: user._id,
+            username: user.username,
+            email: user.email,
+            pic: user.pic,
+            token: generateToken(user._id)
+        });
+    } 
+    else {
+        res.status(401);
+        throw new Error("Invalid email or password");
+    }
+});
+
+// Update a doctor
+const updateDoctor = async (req, res) => {
+    // if (req.body.customerId === req.params.id) {
+    try {
+        const doctor = await Doctor.findByIdAndUpdate(req.params.id, {
+            $set: req.body,
+        });
+        return res.status(200).json("Account has been updated");
     } catch (err) {
-        res.status(500).json(err);
+        return res.status(500).json();
     }
 };
 
+/*
 // Update a doctor
-module.exports.updateDoctor = async (req, res) => {
+const updateDoctor = async (req, res) => {
     if (req.body.doctorId === req.params.id) {
         if (req.body.password) {
             try {
@@ -43,9 +99,10 @@ module.exports.updateDoctor = async (req, res) => {
         return res.status(403).json("False to update");
     }
 };
+*/
 
 // Get doctor by ID or name
-module.exports.getDoctor = async (req, res) => {
+const getDoctor = async (req, res) => {
     const doctorId = req.query.doctorId;
     const doctorname = req.query.doctorname;
     try {
@@ -61,7 +118,7 @@ module.exports.getDoctor = async (req, res) => {
 };
 
 // Get all doctos 
-module.exports.allDoctors = async (req,res) => {
+const allDoctors = async (req,res) => {
     try{
         const allDoctors = await Doctor.find();
         res.status(200).json(allDoctors);
@@ -70,3 +127,19 @@ module.exports.allDoctors = async (req,res) => {
         res.status(500).json(err);
     }
 }
+
+const searchAllDoctors = asyncHandler(async (req, res) => {
+    const keyword = req.query.search
+    ? {
+        $or: [
+            { username: { $regex: req.query.search, $options: "i" } },
+            { email: { $regex: req.query.search, $options: "i" } },
+        ],
+      }
+        : {};
+    
+    const users = await Doctor.find(keyword).find({ _id: { $ne: req.user._id } });
+    res.send(users);
+});
+
+module.exports = { registerDoctor, updateDoctor, getDoctor, authDoctor, allDoctors, searchAllDoctors};

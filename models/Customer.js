@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
+const bcrypt = require('bcryptjs')
 
-const CustomerSchema = new mongoose.Schema(
+const CustomerSchema = mongoose.Schema(
     {
         username: {
             type: String,
@@ -16,7 +17,6 @@ const CustomerSchema = new mongoose.Schema(
         phoneNumber: {
             type: String,
             required: true,
-            unique: true,
         },
         idNumber: {
             type: String,
@@ -33,7 +33,7 @@ const CustomerSchema = new mongoose.Schema(
         },
         profilePicture: {
             type: String,
-            default: "",
+            default: "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
         },
         coverPicture: {
             type: String,
@@ -53,4 +53,19 @@ const CustomerSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-module.exports = mongoose.model("Customer", CustomerSchema);
+CustomerSchema.methods.matchPassword = async function (enteredPassword) {
+    return await bcrypt.compare(enteredPassword, this.password);
+}
+
+CustomerSchema.pre('save', async function (next) {
+    if (!this.isModified) {
+        next()
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+});
+
+const Customer = mongoose.model("Customer", CustomerSchema);
+
+module.exports = Customer;

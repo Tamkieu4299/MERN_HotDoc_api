@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
+const bcrypt = require('bcryptjs')
 
-const DoctorSchema = new mongoose.Schema(
+const DoctorSchema = mongoose.Schema(
     {
         username: {
             type: String,
@@ -35,7 +36,7 @@ const DoctorSchema = new mongoose.Schema(
         },
         profilePicture: {
             type: String,
-            default: "",
+            default: "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
         },
         coverPicture: {
             type: String,
@@ -72,4 +73,19 @@ const DoctorSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-module.exports = mongoose.model("Doctor", DoctorSchema);
+DoctorSchema.methods.matchPassword = async function (enteredPassword) {
+    return await bcrypt.compare(enteredPassword, this.password);
+}
+
+DoctorSchema.pre('save', async function (next) {
+    if (!this.isModified) {
+        next()
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+});
+
+const Doctor = mongoose.model("Doctor", DoctorSchema);
+
+module.exports = Doctor;

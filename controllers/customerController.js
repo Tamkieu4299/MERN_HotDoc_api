@@ -1,8 +1,48 @@
+const asyncHandler = require('express-async-handler');
 const Customer = require("../models/Customer");
 const bcrypt = require("bcrypt");
+const generateToken = require('../config/generateToken');
 
 // Register a customer
-module.exports.registerCustomer = async (req, res) => {
+const registerCustomer = asyncHandler(async (req, res) => {
+    const { username, email, idNumber, phoneNumber , password} = req.body;
+    if (!username || !email || !password || !phoneNumber) {
+        res.status(400);
+        throw new Error("Please enter all the fields");
+    }
+
+    const userExist = await Customer.findOne({username, email});
+    
+    if (userExist) {
+        res.status(400);
+        throw new Error("User already exists");
+    }
+
+    const user = await Customer.create({
+        username,
+        email,
+        phoneNumber,
+        idNumber,
+        password,
+    });
+
+    if (user) {
+        res.status(201).json({
+            _id: user._id,
+            username: user.username,
+            email: user.email,
+            phoneNumber: user.phoneNumber,
+            idNumber: user.idNumber,
+            token:generateToken(user._id)
+        });
+    }
+    else {
+        res.status(400);
+        throw new Error("Failed to create user");
+    }
+});
+
+/*
     try {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(req.body.password, salt);
@@ -18,28 +58,64 @@ module.exports.registerCustomer = async (req, res) => {
     } catch (err) {
         res.status(500).json(err);
     }
-};
-
+});
+*/
+    
 // Login with customer
-// module.exports.loginCustomer = async (req, res) => {
-//     const user = await Customer.findOne({ email: req.body.email });
-//     try {
-//         !user && res.status(404).json("Invalid user");
+const authCustomer = asyncHandler(async (req, res) => {
+    const { email, password } = req.body;
+    const user = await Customer.findOne({ email });
 
-//         const validPassword = await bcrypt.compare(
-//             req.body.password,
-//             user.password
-//         );
-//         !validPassword && res.status(400).json("Invalid password");
+    if (user && (await user.matchPassword(password))) {
+        res.json({
+            _id: user._id,
+            username: user.username,
+            email: user.email,
+            idNumber:user.idNumber,
+            token: generateToken(user._id)
+        });
+    } 
+    else {
+        res.status(401);
+        throw new Error("Invalid email or password");
+    }
+});
 
-//         res.status(200).json(user);
-//     } catch (err) {
-//         res.status(500).json(err);
-//     }
-// };
+/*
+const authCustomer = async (req, res) => {
+    const user = await Customer.findOne({ email: req.body.email });
+    try {
+        !user && res.status(404).json("Invalid user");
+
+        const validPassword = await bcrypt.compare(
+            req.body.password,
+            user.password
+        );
+        !validPassword && res.status(400).json("Invalid password");
+
+        res.status(200).json(user);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+};
+*/
 
 // Update a customer
-module.exports.updateCustomer = async (req, res) => {
+const updateCustomer = async (req, res) => {
+    // if (req.body.customerId === req.params.id) {
+    try {
+        const customer = await Customer.findByIdAndUpdate(req.params.id, {
+            $set: req.body,
+        });
+        return res.status(200).json("Account has been updated");
+    } catch (err) {
+        return res.status(500).json();
+    }
+};
+
+// Update a customer
+/*
+const updateCustomer = async (req, res) => {
     // if (req.body.customerId === req.params.id) {
     if (req.body.password) {
         try {
@@ -61,9 +137,10 @@ module.exports.updateCustomer = async (req, res) => {
     //     return res.status(403).json("False to update");
     // }
 };
+*/
 
 // Get customer by Id or name
-module.exports.getCustomer = async (req, res) => {
+const getCustomer = async (req, res) => {
     const customerId = req.query.customerId;
     const customername = req.query.customername;
 
@@ -77,3 +154,19 @@ module.exports.getCustomer = async (req, res) => {
         res.status(500).json(err);
     }
 };
+
+const searchAllCustomers = asyncHandler(async (req, res) => {
+    const keyword = req.query.search
+    ? {
+        $or: [
+            { username: { $regex: req.query.search, $options: "i" } },
+            { email: { $regex: req.query.search, $options: "i" } },
+        ],
+      }
+        : {};
+    
+    const users = await Customer.find(keyword).find({ _id: { $ne: req.user._id } });
+    res.send(users);
+});
+
+module.exports = { registerCustomer, updateCustomer, getCustomer, authCustomer, searchAllCustomers};
