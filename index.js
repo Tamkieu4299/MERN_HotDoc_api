@@ -12,6 +12,7 @@ const medicineRoute = require("./routes/medicines");
 const authRoute = require("./routes/auth");
 const reviewRoute = require("./routes/reviews");
 const postRoute = require("./routes/posts");
+const drugStoreRoute = require("./routes/drugStore");
 
 const { chats } = require("./data/data");
 const chatRoutes = require("./routes/chatRoutes");
@@ -70,6 +71,8 @@ app.use("/api/reviews", reviewRoute);
 app.use("/api/chat", chatRoutes);
 app.use("/api/message", messageRoutes);
 app.use("/api/posts", postRoute);
+app.use("/api/drugStore", drugStoreRoute);
+
 
 app.use(notFound);
 app.use(errorHandler);
