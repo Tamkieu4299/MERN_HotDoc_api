@@ -11,4 +11,7 @@ router.post("/login", customerController.authCustomer);
 router.put("/:id", customerController.updateCustomer);
 // Get a customer
 router.get("/", customerController.getCustomer);
+// Get all customers
+router.get("/all", customerController.allCustomers);
+
 module.exports = router;

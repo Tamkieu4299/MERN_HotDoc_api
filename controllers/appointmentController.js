@@ -2,6 +2,18 @@ const Appointment = require("../models/Appointment");
 const Doctor = require("../models/Doctor");
 const Time = require("../customClass/Time");
 
+// update a patient notes
+module.exports.updateAppointment = async (req, res) => {
+    try {
+        const customer = await Appointment.findByIdAndUpdate(req.params.id, {
+            $set: req.body,
+        });
+        return res.status(200).json("Apppointment has been updated");
+    } catch (err) {
+        return res.status(500).json();
+    }
+};
+
 // Filter out doctors who are available between from and to
 const getAvailableDoctorsBetween = async (from, to) => {
     const allDoctors = (await Doctor.find()).filter(
@@ -84,5 +96,19 @@ module.exports.appointmentsForDoctor = async (req, res) => {
         return res.status(200).json(appsForDoctor);
     } catch (err) {
         return res.status(500).json("Fail to load appointments for doctor");
+    }
+};
+
+// Get all appointments for a customer
+module.exports.appointmentsForCustomer = async (req, res) => {
+    try {
+        const customerId = req.params.customerId;
+        const allAppointments = await Appointment.find();
+        const appsForCustomer = allAppointments.filter(
+            (app) => app.customerId === customerId
+        );
+        return res.status(200).json(appsForCustomer);
+    } catch (err) {
+        return res.status(500).json("Fail to load appointments for customer");
     }
 };

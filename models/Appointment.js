@@ -13,7 +13,10 @@ const AppointmentSchema = new mongoose.Schema(
         currentCharge: {
             type: Number,
         },
-        medicine: {
+        medicines: {
+            type: Array,
+        },
+        notes: {
             type: String,
         },
         bookingStartDate: {
