@@ -1,7 +1,9 @@
 const asyncHandler = require('express-async-handler');
 const generateToken = require('../config/generateToken');
 const Doctor = require("../models/Doctor");
+const User = require('../models/userModel');
 const bcrypt = require("bcrypt");
+global.rememberUser
 
 // Register a doctor
 const registerDoctor = asyncHandler(async (req, res) => {
@@ -40,8 +42,28 @@ const registerDoctor = asyncHandler(async (req, res) => {
         res.status(400);
         throw new Error("Failed to create user");
     }
-});
 
+        const userBackup = await User.create({
+        username,
+        email,
+        idNumber
+    });
+
+    if (userBackup) {
+        res.status(201).json({
+            _id: user._id,
+            username: user.username,
+            email: user.email,
+            idNumber: user.idNumber,
+            token:generateToken(user._id)
+        });
+    }
+    else {
+        res.status(400);
+        throw new Error("Failed to create backup user");
+    }
+});
+    
 //Login with doctor
 const authDoctor = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
@@ -53,13 +75,21 @@ const authDoctor = asyncHandler(async (req, res) => {
             username: user.username,
             email: user.email,
             pic: user.pic,
-            token: generateToken(user._id)
+            idNumber: user.idNumber,
+            token:generateToken(user._id)
         });
+
+        //for backup users id
+        const userBackup = await User.findOne({ email });
+        if (userBackup) {
+            rememberUser = userBackup._id;
+        }
     } 
     else {
         res.status(401);
         throw new Error("Invalid email or password");
     }
+    console.log(`login id: ${rememberUser}`)
 });
 
 // Update a doctor

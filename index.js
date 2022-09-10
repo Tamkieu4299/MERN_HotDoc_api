@@ -14,6 +14,7 @@ const reviewRoute = require("./routes/reviews");
 const postRoute = require("./routes/posts");
 const drugRoute = require("./routes/drug");
 const orderRoute = require("./routes/drugOrder");
+const userRoute = require("./routes/userRoutes")
 const { chats } = require("./data/data");
 const chatRoutes = require("./routes/chatRoutes");
 const messageRoutes = require("./routes/messageRoutes");
