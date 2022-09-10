@@ -11,7 +11,6 @@ const appointmentRoute = require("./routes/appointments")
 const medicineRoute = require("./routes/medicines");
 const authRoute = require("./routes/auth");
 const reviewRoute = require("./routes/reviews");
-
 const userRoute = require("./routes/userRoutes")
 const { chats } = require("./data/data")
 const chatRoutes = require("./routes/chatRoutes");
