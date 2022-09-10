@@ -1,7 +1,9 @@
 const asyncHandler = require('express-async-handler');
 const Customer = require("../models/Customer");
+const User = require('../models/userModel');
 const bcrypt = require("bcrypt");
 const generateToken = require('../config/generateToken');
+global.rememberUser
 
 // Register a customer
 const registerCustomer = asyncHandler(async (req, res) => {
@@ -40,27 +42,28 @@ const registerCustomer = asyncHandler(async (req, res) => {
         res.status(400);
         throw new Error("Failed to create user");
     }
-});
 
-/*
-    try {
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(req.body.password, salt);
-        const newCustomer = new Customer({
-            username: req.body.username,
-            email: req.body.email,
-            phoneNumber: req.body.phoneNumber,
-            idNumber: req.body.idNumber,
-            password: hashedPassword,
+    const userBackup = await User.create({
+        username,
+        email,
+        idNumber,
+    });
+
+    if (userBackup) {
+        res.status(201).json({
+            _id: user._id,
+            username: user.username,
+            email: user.email,
+            idNumber: user.idNumber,
+            token:generateToken(user._id)
         });
-        const customer = await newCustomer.save();
-        res.status(200).json(customer);
-    } catch (err) {
-        res.status(500).json(err);
+    }
+    else {
+        res.status(400);
+        throw new Error("Failed to create backup user");
     }
 });
-*/
-    
+
 // Login with customer
 const authCustomer = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
@@ -72,13 +75,20 @@ const authCustomer = asyncHandler(async (req, res) => {
             username: user.username,
             email: user.email,
             idNumber:user.idNumber,
-            token: generateToken(user._id)
+            token:generateToken(user._id)
         });
+        
+        //for backup users id
+        const userBackup = await User.findOne({ email });
+        if (userBackup) {
+            rememberUser = userBackup._id;
+        }
     } 
     else {
         res.status(401);
         throw new Error("Invalid email or password");
     }
+    console.log(`login id: ${rememberUser}`)
 });
 
 /*
@@ -165,8 +175,8 @@ const searchAllCustomers = asyncHandler(async (req, res) => {
       }
         : {};
     
-    const users = await Customer.find(keyword).find({ _id: { $ne: req.user._id } });
-    res.send(users);
+    const customers = await Customer.find(keyword).find({ _id: { $ne: req.user._id } });
+    res.send(customers);
 });
 
 module.exports = { registerCustomer, updateCustomer, getCustomer, authCustomer, searchAllCustomers};

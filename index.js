@@ -12,6 +12,7 @@ const medicineRoute = require("./routes/medicines");
 const authRoute = require("./routes/auth");
 const reviewRoute = require("./routes/reviews");
 
+const userRoute = require("./routes/userRoutes")
 const { chats } = require("./data/data")
 const chatRoutes = require("./routes/chatRoutes");
 const messageRoutes = require("./routes/messageRoutes")
@@ -24,7 +25,7 @@ dotenv.config();
 const app = express();
 
 // Database connection
-mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true }, () => {
+global.db = mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true }, () => {
     console.log("Database connected");
 });
 
@@ -48,6 +49,7 @@ app.use("/api/auth", authRoute);
 app.use("/api/reviews", reviewRoute);
 app.use("/api/chat", chatRoutes);
 app.use("/api/message", messageRoutes);
+app.use("/api/user", userRoute);
 
 app.use(notFound)
 app.use(errorHandler)
