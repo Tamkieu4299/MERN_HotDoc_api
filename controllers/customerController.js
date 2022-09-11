@@ -165,6 +165,15 @@ const getCustomer = async (req, res) => {
     }
 };
 
+const allCustomers = async (req,res) =>{
+    try{
+        const customers = await Customer.find();
+        res.status(200).json(customers);
+    } catch(err){
+        res.status(500).json(err);
+    }
+}
+
 const searchAllCustomers = asyncHandler(async (req, res) => {
     const keyword = req.query.search
     ? {
@@ -179,4 +188,4 @@ const searchAllCustomers = asyncHandler(async (req, res) => {
     res.send(customers);
 });
 
-module.exports = { registerCustomer, updateCustomer, getCustomer, authCustomer, searchAllCustomers};
+module.exports = { registerCustomer, updateCustomer, getCustomer, authCustomer, searchAllCustomers, allCustomers};
