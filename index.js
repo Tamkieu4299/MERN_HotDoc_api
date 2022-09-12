@@ -18,6 +18,7 @@ const userRoute = require("./routes/userRoutes")
 const { chats } = require("./data/data");
 const chatRoutes = require("./routes/chatRoutes");
 const messageRoutes = require("./routes/messageRoutes");
+const userRoutes = require("./routes/userRoutes")
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 require("dotenv").config({ path: path.resolve(__dirname, "./.env") });
 
@@ -74,7 +75,7 @@ app.use("/api/message", messageRoutes);
 app.use("/api/posts", postRoute);
 app.use("/api/drugStore", drugRoute);
 app.use("/api/drugOrder", orderRoute);
-
+app.use("/api/users", userRoutes);
 
 
 app.use(notFound);
