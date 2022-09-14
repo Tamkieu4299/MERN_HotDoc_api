@@ -75,7 +75,7 @@ app.use("/api/message", messageRoutes);
 app.use("/api/posts", postRoute);
 app.use("/api/drugStore", drugRoute);
 app.use("/api/drugOrder", orderRoute);
-app.use("/api/users", userRoutes);
+app.use("/api/user", userRoutes);
 
 
 app.use(notFound);

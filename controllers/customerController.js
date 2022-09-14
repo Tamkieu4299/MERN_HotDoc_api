@@ -1,7 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const Customer = require("../models/Customer");
 const User = require('../models/userModel');
-const bcrypt = require("bcrypt");
 const generateToken = require('../config/generateToken');
 global.rememberUser
 
@@ -47,6 +46,7 @@ const registerCustomer = asyncHandler(async (req, res) => {
         username,
         email,
         idNumber,
+        password,
     });
 
     if (userBackup) {

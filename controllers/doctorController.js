@@ -44,9 +44,10 @@ const registerDoctor = asyncHandler(async (req, res) => {
     }
 
         const userBackup = await User.create({
-        username,
-        email,
-        idNumber
+            username,
+            email,
+            idNumber,
+            password
     });
 
     if (userBackup) {
