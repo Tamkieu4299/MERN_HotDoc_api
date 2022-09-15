@@ -60,7 +60,7 @@ const DoctorSchema = mongoose.Schema(
         },
         numberOfBookings: {
             type: Number,
-            default: 0,
+            default: -1,
         },
         availableForBooking: {
             type: Boolean,

@@ -77,7 +77,8 @@ const authDoctor = asyncHandler(async (req, res) => {
             email: user.email,
             pic: user.pic,
             idNumber: user.idNumber,
-            token:generateToken(user._id)
+            token:generateToken(user._id),
+            numberOfBookings: user.numberOfBookings,
         });
 
         //for backup users id
