@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs')
 
+const PF = process.env.REACT_APP_PUBLIC_FOLDER;
+
 const userSchema = mongoose.Schema(
     {
         username: { type: String, required: true },
@@ -10,6 +12,7 @@ const userSchema = mongoose.Schema(
         profilePicture: {
             type: String,
             default:
+                // PF+"anonymous-avatar-icon-25.jpg"
                 "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"
         },
         isAdmin: {
