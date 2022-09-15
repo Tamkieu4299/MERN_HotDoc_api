@@ -75,8 +75,6 @@ app.use("/api/posts", postRoute);
 app.use("/api/drugStore", drugRoute);
 app.use("/api/drugOrder", orderRoute);
 
-
-
 app.use(notFound);
 app.use(errorHandler);
 
@@ -86,6 +84,7 @@ const server = app.listen(
     8800,
     console.log(`Backend Server Started on PORT ${PORT}`)
 );
+
 
 const io = require("socket.io")(server, {
     pingTimeout: 60000,

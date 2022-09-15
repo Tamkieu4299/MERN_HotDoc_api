@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const bcrypt = require('bcryptjs')
+const bcrypt = require("bcryptjs");
 
 const DoctorSchema = mongoose.Schema(
     {
@@ -28,9 +28,12 @@ const DoctorSchema = mongoose.Schema(
         },
         workingDesc: {
             type: String,
+            default:
+                "I remind my fellows, residents and medical students that what we do is a privilege. People let us into the most intimate aspects of their lives, and they look to us to help guide them through very complex and delicate situations.",
         },
-        currentDepartment:{
+        currentDepartment: {
             type: String,
+            default: "In our job, you will never go home at the end of the day thinking that you haven't done something valuable and important."
         },
         password: {
             type: String,
@@ -39,7 +42,8 @@ const DoctorSchema = mongoose.Schema(
         },
         profilePicture: {
             type: String,
-            default: "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
+            default:
+                "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
         },
         coverPicture: {
             type: String,
@@ -58,7 +62,7 @@ const DoctorSchema = mongoose.Schema(
         },
         availableForBooking: {
             type: Boolean,
-            default: false,
+            default: true,
         },
         isAutherized: {
             type: Boolean,
@@ -70,6 +74,7 @@ const DoctorSchema = mongoose.Schema(
         },
         services: {
             type: String,
+            default: "[Being a doctor] offers the most complete and constant union of those three qualities which have the greatest charm for pure and active minds - novelty, utility, and charity."
         },
     },
     { timestamps: true }
@@ -77,11 +82,11 @@ const DoctorSchema = mongoose.Schema(
 
 DoctorSchema.methods.matchPassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
-}
+};
 
-DoctorSchema.pre('save', async function (next) {
+DoctorSchema.pre("save", async function (next) {
     if (!this.isModified) {
-        next()
+        next();
     }
 
     const salt = await bcrypt.genSalt(10);
