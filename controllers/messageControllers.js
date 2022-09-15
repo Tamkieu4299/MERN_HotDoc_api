@@ -12,7 +12,7 @@ const sendMessage = asyncHandler(async (req, res) => {
     }
 
     var newMessage = {
-        sender: global.rememberUser,
+        sender: req.user._id,
         content: content,
         chat: chatId,
     };
@@ -20,11 +20,11 @@ const sendMessage = asyncHandler(async (req, res) => {
     try {
         var message = await Message.create(newMessage);
 
-        message = await message.populate("sender", "name pic").execPopulate();
-        message = await message.populate("chat").execPopulate();
+        message = await message.populate("sender", "username profilePicture");
+        message = await message.populate("chat");
         message = await User.populate(message, {
             path: 'chat.users',
-            select: 'name pic email'
+            select: 'username profilePicture email'
         });
 
         await Chat.findByIdAndUpdate(req.body.chatId, {
@@ -39,7 +39,7 @@ const sendMessage = asyncHandler(async (req, res) => {
 const allMessage = asyncHandler(async(req, res) => {
     try {
         const messages = await Message.find({ chat: req.params.chatId })
-        .populate("sender", "name pic email")
+        .populate("sender", "username profilePicture email")
         .populate("chat");
         
         res.json(messages);
