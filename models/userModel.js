@@ -12,8 +12,8 @@ const userSchema = mongoose.Schema(
         profilePicture: {
             type: String,
             default:
-                // PF+"anonymous-avatar-icon-25.jpg"
-                "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"
+                PF+"anonymous-avatar-icon-25.jpg"
+                // "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"
         },
         isAdmin: {
             type: Boolean,

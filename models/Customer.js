@@ -35,8 +35,8 @@ const CustomerSchema = mongoose.Schema(
         },
         profilePicture: {
             type: String,
-            // default: PF+"anonymous-avatar-icon-25.jpg",
-            default: "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
+            default: PF+"anonymous-avatar-icon-25.jpg",
+            // default: "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
         },
         coverPicture: {
             type: String,
