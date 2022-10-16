@@ -84,7 +84,7 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 8800;
 
 const server = app.listen(
-    8800,
+    PORT,
     console.log(`Backend Server Started on PORT ${PORT}`)
 );
 
