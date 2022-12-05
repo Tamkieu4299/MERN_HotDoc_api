@@ -20,13 +20,14 @@ const chatRoutes = require("./routes/chatRoutes");
 const messageRoutes = require("./routes/messageRoutes");
 const userRoutes = require("./routes/userRoutes")
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
+const cors = require("cors");
 require("dotenv").config({ path: path.resolve(__dirname, "./.env") });
 
 // Express Application
 dotenv.config();
 
 const app = express();
-
+app.use(cors());
 // Database connection
 mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true }, () => {
     console.log("Database connected");
